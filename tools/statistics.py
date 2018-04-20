@@ -828,18 +828,31 @@ class StatisticsTool:
         # flowline stat view
         session.execute(
             """CREATE VIEW IF NOT EXISTS flowline_stats_view 
-               (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom, 
-                cum_discharge, cum_discharge_positive, cum_discharge_negative, 
-                max_discharge, end_discharge, 
-                max_velocity, end_velocity,
-                max_head_difference, max_waterlevel_start, max_waterlevel_end) AS 
-               SELECT f.id, f.inp_id, f.spatialite_id, f.type, f.start_node_idx, f.end_node_idx, f.the_geom,
-                fs.cum_discharge, fs.cum_discharge_positive, fs.cum_discharge_negative, 
-                fs.max_discharge, fs.end_discharge, 
-                fs.max_velocity, fs.end_velocity,
-                fs.max_head_difference, fs.max_waterlevel_start, fs.max_waterlevel_end
-                FROM flowlines f, flowline_stats fs 
-                WHERE f.id = fs.id;"""
+               -- (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom, 
+               --  cum_discharge, cum_discharge_positive, cum_discharge_negative, 
+               --  max_discharge, end_discharge, 
+               --  max_velocity, end_velocity,
+               --  max_head_difference, max_waterlevel_start, max_waterlevel_end)
+               AS SELECT
+                f.id,
+                f.inp_id,
+                f.spatialite_id,
+                f.type as TYPE,
+                f.start_node_idx,
+                f.end_node_idx,
+                f.the_geom,
+                fs.cum_discharge,
+                fs.cum_discharge_positive,
+                fs.cum_discharge_negative,
+                fs.max_discharge,
+                fs.end_discharge,
+                fs.max_velocity,
+                fs.end_velocity,
+                fs.max_head_difference,
+                fs.max_waterlevel_start,
+                fs.max_waterlevel_end
+               FROM flowlines f, flowline_stats fs
+               WHERE f.id = fs.id;"""
         )
         session.execute(
             """
@@ -859,24 +872,49 @@ class StatisticsTool:
 
         # pipe stat view
         session.execute(
-            """CREATE VIEW IF NOT EXISTS pipe_stats_view 
-               (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom,
-                code, display_name, sewerage_type, abs_length, invert_level_start, invert_level_end, profile_height,
-                max_hydro_gradient, max_filling, end_filling,
-                cum_discharge, cum_discharge_positive, cum_discharge_negative, 
-                max_discharge, end_discharge, 
-                max_velocity, end_velocity,
-                max_head_difference, max_waterlevel_start, max_waterlevel_end) AS 
-               SELECT f.id, f.inp_id, f.spatialite_id, f.type, f.start_node_idx, f.end_node_idx, f.the_geom,
-                ps.code, ps.display_name, ps.sewerage_type, fs.abs_length, ps.invert_level_start, ps.invert_level_end, 
-                ps.profile_height,
-                ps.max_hydro_gradient, ps.max_filling, ps.end_filling,   
-                fs.cum_discharge, fs.cum_discharge_positive, fs.cum_discharge_negative, 
-                fs.max_discharge, fs.end_discharge, 
-                fs.max_velocity, fs.end_velocity,
-                fs.max_head_difference, fs.max_waterlevel_start, fs.max_waterlevel_end
-                FROM flowlines f, flowline_stats fs, pipe_stats ps
-                WHERE f.id = fs.id AND f.id = ps.id;"""
+            """
+            CREATE VIEW IF NOT EXISTS pipe_stats_view
+            -- (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom,
+             --  code, display_name, sewerage_type, abs_length, invert_level_start, invert_level_end, profile_height,
+             --  max_hydro_gradient, max_filling, end_filling,
+             --  cum_discharge, cum_discharge_positive, cum_discharge_negative,
+             --  max_discharge, end_discharge,
+             --  max_velocity, end_velocity,
+             --  max_head_difference, max_waterlevel_start, max_waterlevel_end)
+            AS
+            SELECT f.id,
+                   f.inp_id,
+                   f.spatialite_id,
+                   f.type AS TYPE,
+                   f.start_node_idx,
+                   f.end_node_idx,
+                   f.the_geom,
+                   ps.code,
+                   ps.display_name,
+                   ps.sewerage_type,
+                   fs.abs_length,
+                   ps.invert_level_start,
+                   ps.invert_level_end,
+                   ps.profile_height,
+                   ps.max_hydro_gradient,
+                   ps.max_filling,
+                   ps.end_filling,
+                   fs.cum_discharge,
+                   fs.cum_discharge_positive,
+                   fs.cum_discharge_negative,
+                   fs.max_discharge,
+                   fs.end_discharge,
+                   fs.max_velocity,
+                   fs.end_velocity,
+                   fs.max_head_difference,
+                   fs.max_waterlevel_start,
+                   fs.max_waterlevel_end
+            FROM flowlines f,
+                 flowline_stats fs,
+                 pipe_stats ps
+            WHERE f.id = fs.id
+            AND f.id = ps.id;
+            """
         )
         session.execute(
             """
@@ -944,23 +982,45 @@ class StatisticsTool:
 
         # weir stat view
         session.execute(
-            """CREATE VIEW IF NOT EXISTS weir_stats_view 
-               (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom,
-                code, display_name,
-                perc_volume, perc_volume_positive, perc_volume_negative, max_overfall_height,
-                cum_discharge, cum_discharge_positive, cum_discharge_negative, 
-                max_discharge, end_discharge, 
-                max_velocity, end_velocity,
-                max_head_difference, max_waterlevel_start, max_waterlevel_end) AS 
-               SELECT f.id, f.inp_id, f.spatialite_id, f.type, f.start_node_idx, f.end_node_idx, f.the_geom,
-                ws.code, ws.display_name,
-                ws.perc_volume, ws.perc_volume_positive, ws.perc_volume_negative, ws.max_overfall_height,  
-                fs.cum_discharge, fs.cum_discharge_positive, fs.cum_discharge_negative, 
-                fs.max_discharge, fs.end_discharge, 
-                fs.max_velocity, fs.end_velocity,
-                fs.max_head_difference, fs.max_waterlevel_start, fs.max_waterlevel_end
-                FROM flowlines f, flowline_stats fs, weir_stats ws
-                WHERE f.id = fs.id AND f.id = ws.id;"""
+            """
+            CREATE VIEW IF NOT EXISTS weir_stats_view
+             --(id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom,
+             -- code, display_name,
+             -- perc_volume, perc_volume_positive, perc_volume_negative, max_overfall_height,
+             -- cum_discharge, cum_discharge_positive, cum_discharge_negative,
+             -- max_discharge, end_discharge,
+             -- max_velocity, end_velocity,
+             -- max_head_difference, max_waterlevel_start, max_waterlevel_end)
+             AS
+            SELECT f.id,
+                   f.inp_id,
+                   f.spatialite_id,
+                   f.type as TYPE,
+                   f.start_node_idx,
+                   f.end_node_idx,
+                   f.the_geom,
+                   ws.code,
+                   ws.display_name,
+                   ws.perc_volume,
+                   ws.perc_volume_positive,
+                   ws.perc_volume_negative,
+                   ws.max_overfall_height,
+                   fs.cum_discharge,
+                   fs.cum_discharge_positive,
+                   fs.cum_discharge_negative,
+                   fs.max_discharge,
+                   fs.end_discharge,
+                   fs.max_velocity,
+                   fs.end_velocity,
+                   fs.max_head_difference,
+                   fs.max_waterlevel_start,
+                   fs.max_waterlevel_end
+            FROM flowlines f,
+                 flowline_stats fs,
+                 weir_stats ws
+            WHERE f.id = fs.id
+              AND f.id = ws.id;
+                """
         )
         session.execute(
             """
@@ -983,18 +1043,34 @@ class StatisticsTool:
 
         # manhole stat view
         session.execute(
-            """CREATE VIEW IF NOT EXISTS manhole_stats_view 
-               (id, inp_id, spatialite_id, featuretype, TYPE, the_geom, 
-                code, display_name, sewerage_type, bottom_level, surface_level,
-                duration_water_on_surface, max_waterlevel, end_waterlevel, max_waterdepth_surface, 
-                end_filling, max_filling
-               ) AS 
-               SELECT n.id, n.inp_id, n.spatialite_id, n.featuretype, n.type, n.the_geom,
-                mst.code, mst.display_name, mst.sewerage_type, mst.bottom_level, mst.surface_level,
-                mst.duration_water_on_surface, mst.max_waterlevel, mst.end_waterlevel, mst.max_waterdepth_surface, 
-                mst.end_filling, mst.max_filling
-                FROM nodes n, manhole_stats mst 
-                WHERE n.id = mst.id;"""
+            """
+            CREATE VIEW IF NOT EXISTS manhole_stats_view
+             --(id, inp_id, spatialite_id, featuretype, TYPE, the_geom,
+             -- code, display_name, sewerage_type, bottom_level, surface_level,
+             -- duration_water_on_surface, max_waterlevel, end_waterlevel, max_waterdepth_surface,
+             -- end_filling, max_filling)
+             AS
+            SELECT n.id,
+                   n.inp_id,
+                   n.spatialite_id,
+                   n.featuretype,
+                   n.type as TYPE,
+                   n.the_geom,
+                   mst.code,
+                   mst.display_name,
+                   mst.sewerage_type,
+                   mst.bottom_level,
+                   mst.surface_level,
+                   mst.duration_water_on_surface,
+                   mst.max_waterlevel,
+                   mst.end_waterlevel,
+                   mst.max_waterdepth_surface,
+                   mst.end_filling,
+                   mst.max_filling
+            FROM nodes n,
+                 manhole_stats mst
+            WHERE n.id = mst.id;
+            """
         )
         session.execute(
             """
@@ -1064,19 +1140,32 @@ class StatisticsTool:
 
         # pump stat view Lines
         session.execute(
-            """CREATE VIEW IF NOT EXISTS pump_stats_view 
-               (id, node_idx1, node_idx2, the_geom, 
-                spatialite_id, code, display_name, capacity,
-                cum_discharge, end_discharge, max_discharge, perc_max_discharge, perc_end_discharge, 
-                perc_cum_discharge, duration_pump_on_max
-               ) AS 
-               SELECT p.id, p.node_idx1, p.node_idx2, p.the_geom,
-                ps.spatialite_id, ps.code, ps.display_name, ps.capacity,
-                ps.cum_discharge, ps.end_discharge, ps.max_discharge, ps.perc_max_discharge, ps.perc_end_discharge,
-                ps.perc_cum_discharge, ps.duration_pump_on_max
-                FROM pumplines p, pumpline_stats ps
-                WHERE p.id = ps.id;
-        """
+            """
+            CREATE VIEW IF NOT EXISTS pump_stats_view
+             --(id, node_idx1, node_idx2, the_geom,
+             -- spatialite_id, code, display_name, capacity,
+             -- cum_discharge, end_discharge, max_discharge, perc_max_discharge, perc_end_discharge,
+             -- perc_cum_discharge, duration_pump_on_max)
+             AS
+            SELECT p.id,
+                   p.node_idx1,
+                   p.node_idx2,
+                   p.the_geom,
+                   ps.spatialite_id,
+                   ps.code,
+                   ps.display_name,
+                   ps.capacity,
+                   ps.cum_discharge,
+                   ps.end_discharge,
+                   ps.max_discharge,
+                   ps.perc_max_discharge,
+                   ps.perc_end_discharge,
+                   ps.perc_cum_discharge,
+                   ps.duration_pump_on_max
+            FROM pumplines p,
+                 pumpline_stats ps
+            WHERE p.id = ps.id;
+            """
         )
         session.execute(
             """
@@ -1093,19 +1182,32 @@ class StatisticsTool:
 
         # pump stat view Lines - points
         session.execute(
-            """CREATE VIEW IF NOT EXISTS pump_stats_point_view 
-               (ROWID, id, node_idx1, node_idx2, the_geom, 
-                spatialite_id, code, display_name, capacity,
-                cum_discharge, end_discharge, max_discharge, perc_max_discharge, perc_end_discharge, 
-                perc_cum_discharge, duration_pump_on_max
-               ) AS 
-               SELECT p.id, p.id, p.node_idx1, p.node_idx2, StartPoint(p.the_geom),
-                ps.spatialite_id, ps.code, ps.display_name, ps.capacity,
-                ps.cum_discharge, ps.end_discharge, ps.max_discharge, ps.perc_max_discharge, ps.perc_end_discharge,
-                ps.perc_cum_discharge, ps.duration_pump_on_max
-                FROM pumplines p, pumpline_stats ps
-                WHERE p.id = ps.id;
-        """
+            """
+            CREATE VIEW IF NOT EXISTS pump_stats_point_view --(ROWID, id, node_idx1, node_idx2, the_geom,
+             -- spatialite_id, code, display_name, capacity,
+             -- cum_discharge, end_discharge, max_discharge, perc_max_discharge, perc_end_discharge,
+             -- perc_cum_discharge, duration_pump_on_max)
+             AS
+            SELECT p.id AS ROWID,
+                   p.id AS id,
+                   p.node_idx1,
+                   p.node_idx2,
+                   StartPoint(p.the_geom) AS the_geom,
+                   ps.spatialite_id,
+                   ps.code,
+                   ps.display_name,
+                   ps.capacity,
+                   ps.cum_discharge,
+                   ps.end_discharge,
+                   ps.max_discharge,
+                   ps.perc_max_discharge,
+                   ps.perc_end_discharge,
+                   ps.perc_cum_discharge,
+                   ps.duration_pump_on_max
+            FROM pumplines p,
+                 pumpline_stats ps
+            WHERE p.id = ps.id;
+            """
         )
         session.execute(
             """
