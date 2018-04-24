@@ -37,7 +37,7 @@ class DataSourceAdapter(Proxy):
         """Contructor.
 
         Args:
-            datasource: BaseDataSource instance
+            proxied_datasource: BaseDataSource instance that is being proxied
         """
         super(DataSourceAdapter, self).__init__(proxied_datasource)
         self._nflowlines = None
