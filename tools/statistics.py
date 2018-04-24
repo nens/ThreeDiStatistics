@@ -19,6 +19,46 @@ from zThreeDiStatistics.utils.statistics_database import (
 log = logging.getLogger(__name__)
 
 
+class Proxy(object):
+    # Proxy objects of other classes
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __getattr__(self, attr):
+        # __getattr__ runs only on undefined attribute accesses, which is
+        # the desired behavior
+        return getattr(self.obj, attr)
+
+
+class DataSourceAdapter(Proxy):
+    """Adapter or proxy-like for a BaseDataSource."""
+
+    def __init__(self, proxied_datasource):
+        """Contructor.
+
+        Args:
+            datasource: BaseDataSource instance
+        """
+        super(DataSourceAdapter, self).__init__(proxied_datasource)
+        self._nflowlines = None
+
+    @property
+    def nFlowLine(self):
+        if self._nflowlines is None:
+            try:
+                self._nflowlines = self.obj.nFlowLine
+            except AttributeError:
+                # TODO: minus 1?
+                self._nflowlines = (
+                    self.obj.ds.dimensions['nMesh2D_lines'].size +
+                    self.obj.ds.dimensions['nMesh1D_lines'].size)
+        return self._nflowlines
+
+    @property
+    def has_groundwater(self):
+        return self.obj.__class__.__name__ == 'NetcdfDataSourceGroundwater'
+
+
 class StatisticsTool:
     """QGIS Plugin Implementation."""
 
@@ -80,7 +120,8 @@ class StatisticsTool:
         else:
             test = False
 
-        self.ds = self.ts_datasource.rows[-1].datasource()
+        self.datasource = self.ts_datasource.rows[-1].datasource()
+        self.ds = DataSourceAdapter(self.datasource)
         self.result_db_qmodel = self.ts_datasource.rows[0]
 
         # setup statistics database sqlalchemy instance and create models (if not exist) in the
@@ -122,8 +163,10 @@ class StatisticsTool:
             self.calc_pipe_and_weir_statistics()
             self.create_line_views()
 
-            self.get_pump_attributes_and_statistics()
-            self.create_pump_views()
+            if not self.ds.has_groundwater:
+                # TODO: implement pump stats
+                self.get_pump_attributes_and_statistics()
+                self.create_pump_views()
 
         # add layers to QGIS map
         if not test:
@@ -421,6 +464,10 @@ class StatisticsTool:
         start_idx = np.array(start_idx)
         end_idx = np.array(end_idx)
         log.info('read flowline results and calculate stats')
+        if self.ds.has_groundwater:
+            # TODO: make something prettier
+            start_idx -= 1
+            end_idx -= 1
 
         qcum, agg_q_cum = self.get_agg_cum_if_available('q_cum')
         qcum_pos, agg_q_cum_pos = self.get_agg_cum_if_available('q_cum_positive')
