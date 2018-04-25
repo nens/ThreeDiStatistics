@@ -510,8 +510,8 @@ class StatisticsTool:
             h = ds.get_values_by_timestep_nr('s1', i)
             h_array = h
 
-            h_start = np.take(h_array, start_idx)
-            h_end = np.take(h_array, end_idx)
+            h_start = h_array[start_idx]
+            h_end = h_array[end_idx]
             try:
                 np.copyto(dh_max, np.maximum(dh_max, np.asarray(np.absolute(h_start - h_end))),
                       where=np.logical_not(np.logical_or(h_start.mask, h_end.mask)))
@@ -537,8 +537,8 @@ class StatisticsTool:
         qend = ds.get_values_by_timestep_nr('q', len(ds.timestamps) - 1)
         vend = ds.get_values_by_timestep_nr('u1', len(ds.timestamps) - 1)
         h_last_ts = ds.get_values_by_timestep_nr('s1', len(ds.timestamps) - 1)
-        hend_start = np.take(h_last_ts, start_idx)
-        hend_end = np.take(h_last_ts, end_idx)
+        hend_start = h_last_ts[start_idx]
+        hend_end = h_last_ts[end_idx]
 
         # save stats to the database
         log.info('prepare flowline statistics for database')
