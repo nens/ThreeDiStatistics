@@ -829,7 +829,7 @@ class StatisticsTool:
             else:
                 # groundwater version doesn't have id_mapping. But the pump
                 # ids are basically the enumeration of the sorted spatialite
-                # ids, starting by 1.
+                # ids, starting at 1 (hence the + 1).
                 id_ = i + 1
             ps = PumplineStats(
                 id=id_,
@@ -885,13 +885,9 @@ class StatisticsTool:
 
         # flowline stat view
         session.execute(
-            """CREATE VIEW IF NOT EXISTS flowline_stats_view 
-               -- (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom, 
-               --  cum_discharge, cum_discharge_positive, cum_discharge_negative, 
-               --  max_discharge, end_discharge, 
-               --  max_velocity, end_velocity,
-               --  max_head_difference, max_waterlevel_start, max_waterlevel_end)
-               AS SELECT
+            """CREATE VIEW IF NOT EXISTS flowline_stats_view
+                AS
+               SELECT
                 f.id,
                 f.inp_id,
                 f.spatialite_id,
@@ -932,14 +928,7 @@ class StatisticsTool:
         session.execute(
             """
             CREATE VIEW IF NOT EXISTS pipe_stats_view
-            -- (id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom,
-             --  code, display_name, sewerage_type, abs_length, invert_level_start, invert_level_end, profile_height,
-             --  max_hydro_gradient, max_filling, end_filling,
-             --  cum_discharge, cum_discharge_positive, cum_discharge_negative,
-             --  max_discharge, end_discharge,
-             --  max_velocity, end_velocity,
-             --  max_head_difference, max_waterlevel_start, max_waterlevel_end)
-            AS
+             AS
             SELECT f.id,
                    f.inp_id,
                    f.spatialite_id,
@@ -1042,13 +1031,6 @@ class StatisticsTool:
         session.execute(
             """
             CREATE VIEW IF NOT EXISTS weir_stats_view
-             --(id, inp_id, spatialite_id, TYPE, start_node_idx, end_node_idx, the_geom,
-             -- code, display_name,
-             -- perc_volume, perc_volume_positive, perc_volume_negative, max_overfall_height,
-             -- cum_discharge, cum_discharge_positive, cum_discharge_negative,
-             -- max_discharge, end_discharge,
-             -- max_velocity, end_velocity,
-             -- max_head_difference, max_waterlevel_start, max_waterlevel_end)
              AS
             SELECT f.id,
                    f.inp_id,
@@ -1103,10 +1085,6 @@ class StatisticsTool:
         session.execute(
             """
             CREATE VIEW IF NOT EXISTS manhole_stats_view
-             --(id, inp_id, spatialite_id, featuretype, TYPE, the_geom,
-             -- code, display_name, sewerage_type, bottom_level, surface_level,
-             -- duration_water_on_surface, max_waterlevel, end_waterlevel, max_waterdepth_surface,
-             -- end_filling, max_filling)
              AS
             SELECT n.id,
                    n.inp_id,
@@ -1200,10 +1178,6 @@ class StatisticsTool:
         session.execute(
             """
             CREATE VIEW IF NOT EXISTS pump_stats_view
-             --(id, node_idx1, node_idx2, the_geom,
-             -- spatialite_id, code, display_name, capacity,
-             -- cum_discharge, end_discharge, max_discharge, perc_max_discharge, perc_end_discharge,
-             -- perc_cum_discharge, duration_pump_on_max)
              AS
             SELECT p.id,
                    p.node_idx1,
@@ -1241,10 +1215,7 @@ class StatisticsTool:
         # pump stat view Lines - points
         session.execute(
             """
-            CREATE VIEW IF NOT EXISTS pump_stats_point_view --(ROWID, id, node_idx1, node_idx2, the_geom,
-             -- spatialite_id, code, display_name, capacity,
-             -- cum_discharge, end_discharge, max_discharge, perc_max_discharge, perc_end_discharge,
-             -- perc_cum_discharge, duration_pump_on_max)
+            CREATE VIEW IF NOT EXISTS pump_stats_point_view
              AS
             SELECT p.id AS ROWID,
                    p.id AS id,
