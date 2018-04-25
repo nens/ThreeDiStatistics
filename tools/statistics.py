@@ -163,10 +163,8 @@ class StatisticsTool:
             self.calc_pipe_and_weir_statistics()
             self.create_line_views()
 
-            if not self.ds.has_groundwater:
-                # TODO: implement pump stats
-                self.get_pump_attributes_and_statistics()
-                self.create_pump_views()
+            self.get_pump_attributes_and_statistics()
+            self.create_pump_views()
 
         # add layers to QGIS map
         if not test:
@@ -814,14 +812,25 @@ class StatisticsTool:
 
         pump_stats = []
         log.info("Make Pumpline statistic instances ")
-        # no idmapping info in pumpline model, so get from idmapping file
-        id_mapping = self.ds.id_mapping['v2_pumpstation']
+
+        id_mapping = None
+        if not self.ds.has_groundwater:
+            # no idmapping info in pumpline model, so get from idmapping file
+            id_mapping = self.ds.id_mapping['v2_pumpstation']
 
         max_q_cum = q_cum.max()
 
         for i, pump in enumerate(mod_session.query(pump_table).order_by(pump_table.c.id)):
+            if not self.ds.has_groundwater:
+                # no idmapping info in pumpline model, so get from idmapping file
+                id_ = id_mapping[str(pump.id)] - 1
+            else:
+                # groundwater version doesn't have id_mapping. But the pump
+                # ids are basically the enumeration of the sorted spatialite
+                # ids, starting by 1.
+                id_ = i + 1
             ps = PumplineStats(
-                id=id_mapping[str(pump.id)] - 1,
+                id=id_,
                 spatialite_id=pump.id,
                 code=pump.code,
                 display_name=pump.display_name,
