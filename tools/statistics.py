@@ -885,28 +885,29 @@ class StatisticsTool:
 
         # flowline stat view
         session.execute(
-            """CREATE VIEW IF NOT EXISTS flowline_stats_view
-                AS
-               SELECT
-                f.id,
-                f.inp_id,
-                f.spatialite_id,
-                f.type as TYPE,
-                f.start_node_idx,
-                f.end_node_idx,
-                f.the_geom,
-                fs.cum_discharge,
-                fs.cum_discharge_positive,
-                fs.cum_discharge_negative,
-                fs.max_discharge,
-                fs.end_discharge,
-                fs.max_velocity,
-                fs.end_velocity,
-                fs.max_head_difference,
-                fs.max_waterlevel_start,
-                fs.max_waterlevel_end
-               FROM flowlines f, flowline_stats fs
-               WHERE f.id = fs.id;"""
+            """
+            CREATE VIEW IF NOT EXISTS flowline_stats_view AS
+            SELECT f.id,
+                   f.inp_id,
+                   f.spatialite_id,
+                   f.type as TYPE,
+                   f.start_node_idx,
+                   f.end_node_idx,
+                   f.the_geom,
+                   fs.cum_discharge,
+                   fs.cum_discharge_positive,
+                   fs.cum_discharge_negative,
+                   fs.max_discharge,
+                   fs.end_discharge,
+                   fs.max_velocity,
+                   fs.end_velocity,
+                   fs.max_head_difference,
+                   fs.max_waterlevel_start,
+                   fs.max_waterlevel_end
+            FROM flowlines f,
+                 flowline_stats fs
+            WHERE f.id = fs.id;
+           """
         )
         session.execute(
             """
@@ -927,8 +928,7 @@ class StatisticsTool:
         # pipe stat view
         session.execute(
             """
-            CREATE VIEW IF NOT EXISTS pipe_stats_view
-             AS
+            CREATE VIEW IF NOT EXISTS pipe_stats_view AS
             SELECT f.id,
                    f.inp_id,
                    f.spatialite_id,
@@ -960,7 +960,7 @@ class StatisticsTool:
                  flowline_stats fs,
                  pipe_stats ps
             WHERE f.id = fs.id
-            AND f.id = ps.id;
+              AND f.id = ps.id;
             """
         )
         session.execute(
@@ -1030,8 +1030,7 @@ class StatisticsTool:
         # weir stat view
         session.execute(
             """
-            CREATE VIEW IF NOT EXISTS weir_stats_view
-             AS
+            CREATE VIEW IF NOT EXISTS weir_stats_view AS
             SELECT f.id,
                    f.inp_id,
                    f.spatialite_id,
@@ -1084,8 +1083,7 @@ class StatisticsTool:
         # manhole stat view
         session.execute(
             """
-            CREATE VIEW IF NOT EXISTS manhole_stats_view
-             AS
+            CREATE VIEW IF NOT EXISTS manhole_stats_view AS
             SELECT n.id,
                    n.inp_id,
                    n.spatialite_id,
@@ -1177,8 +1175,7 @@ class StatisticsTool:
         # pump stat view Lines
         session.execute(
             """
-            CREATE VIEW IF NOT EXISTS pump_stats_view
-             AS
+            CREATE VIEW IF NOT EXISTS pump_stats_view AS
             SELECT p.id,
                    p.node_idx1,
                    p.node_idx2,
@@ -1215,8 +1212,7 @@ class StatisticsTool:
         # pump stat view Lines - points
         session.execute(
             """
-            CREATE VIEW IF NOT EXISTS pump_stats_point_view
-             AS
+            CREATE VIEW IF NOT EXISTS pump_stats_point_view AS
             SELECT p.id AS ROWID,
                    p.id AS id,
                    p.node_idx1,
