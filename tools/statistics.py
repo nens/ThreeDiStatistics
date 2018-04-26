@@ -462,13 +462,6 @@ class StatisticsTool:
         start_idx = np.array(start_idx)
         end_idx = np.array(end_idx)
         log.info('read flowline results and calculate stats')
-        if self.ds.has_groundwater:
-            # in the groundwater version, the node index starts from 1 instead
-            # of 0. The NetcdfDataSourceGroundwater takes this into account,
-            # but if you use the node index to get data from the netCDF on
-            # your own, you need to subtract 1 from the id.
-            start_idx -= 1
-            end_idx -= 1
 
         qcum, agg_q_cum = self.get_agg_cum_if_available('q_cum')
         qcum_pos, agg_q_cum_pos = self.get_agg_cum_if_available('q_cum_positive')
@@ -508,10 +501,9 @@ class StatisticsTool:
             vmax = np.maximum(vmax, v)
             vmin = np.minimum(vmin, v)
 
-            h = ds.get_values_by_timestep_nr('s1', i)
+            h_start = ds.get_values_by_timestep_nr('s1', i, index=start_idx)
+            h_end = ds.get_values_by_timestep_nr('s1', i, index=end_idx)
 
-            h_start = h[start_idx]
-            h_end = h[end_idx]
             try:
                 np.copyto(dh_max, np.maximum(dh_max, np.asarray(np.absolute(h_start - h_end))),
                       where=np.logical_not(np.logical_or(h_start.mask, h_end.mask)))
