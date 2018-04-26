@@ -513,7 +513,7 @@ class StatisticsTool:
 
             hmax_start = np.maximum(hmax_start, np.asarray(h_start))
             hmax_end = np.maximum(hmax_end, np.asarray(h_end))
-        
+
         # make it work for 2D models
         if not dh_max_calc:
             dh_max = np.zeros(ds.nFlowLine)
@@ -528,9 +528,10 @@ class StatisticsTool:
 
         qend = ds.get_values_by_timestep_nr('q', len(ds.timestamps) - 1)
         vend = ds.get_values_by_timestep_nr('u1', len(ds.timestamps) - 1)
-        h_last_ts = ds.get_values_by_timestep_nr('s1', len(ds.timestamps) - 1)
-        hend_start = h_last_ts[start_idx]
-        hend_end = h_last_ts[end_idx]
+        hend_start = ds.get_values_by_timestep_nr(
+            's1', len(ds.timestamps) - 1, index=start_idx)
+        hend_end = ds.get_values_by_timestep_nr(
+            's1', len(ds.timestamps) - 1, index=end_idx)
 
         # save stats to the database
         log.info('prepare flowline statistics for database')
