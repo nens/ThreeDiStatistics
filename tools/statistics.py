@@ -41,6 +41,7 @@ class DataSourceAdapter(Proxy):
         """
         super(DataSourceAdapter, self).__init__(proxied_datasource)
         self._nflowlines = None
+        self._timestamps = None
 
     @property
     def nFlowLine(self):
@@ -57,6 +58,13 @@ class DataSourceAdapter(Proxy):
     @property
     def has_groundwater(self):
         return self.obj.__class__.__name__ == 'NetcdfDataSourceGroundwater'
+
+    @property
+    def timestamps(self):
+        if self._timestamps is None:
+            # ``get_timestamps`` is a public method, we should use that
+            self._timestamps = self.obj.get_timestamps()
+        return self._timestamps
 
 
 class StatisticsTool:
