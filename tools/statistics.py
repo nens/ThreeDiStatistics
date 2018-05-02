@@ -313,7 +313,7 @@ class StatisticsTool:
         if 's1_max' in self.ds.get_available_variables():
             agg_h_max = True
             h_max = np.full(nr_manholes, -9999.0)
-            for i, timestamp in enumerate(self.ds.get_agg_var_timestamps('s1_max')):
+            for i, timestamp in enumerate(self.ds.get_timestamps(parameter='s1_max')):
                 h = self.ds.get_values_by_timestep_nr(
                     's1_max',
                     i,
@@ -449,7 +449,7 @@ class StatisticsTool:
             agg_cum = True
             result = self.ds.get_values_by_timestep_nr(
                 parameter_name,
-                len(self.ds.get_agg_var_timestamps(parameter_name)) - 1)
+                len(self.ds.get_timestamps(parameter=parameter_name)) - 1)
         else:
             agg_cum = False
             result = np.zeros(nr)
